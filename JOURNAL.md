@@ -1,7 +1,7 @@
 # Journal
 
 Une entrée par étape : ce qui a été fait, ce que j'ai appris, où j'ai buté.
-Les questions de contrôle et leurs réponses complètes sont dans `docs/CHEATSHEET.md`.
+Les questions de contrôle et leurs réponses complètes sont dans `docs/revision/`.
 
 ## Phase 0 — Fondations
 
@@ -28,8 +28,8 @@ Les questions de contrôle et leurs réponses complètes sont dans `docs/CHEATSH
   dépôts, plugins, environnement (fuseau, date), contenu des archives
 
 **Points de blocage**
-- Aucune des 3 questions de contrôle sue → réponses détaillées dans la cheatsheet,
-  à relire en priorité
+- Aucune des 3 questions de contrôle sue → réponses dans
+  `docs/revision/2-approfondissement.md` (questions de niveau 2 : non prioritaires)
 - Docker non installé sur le poste : nécessaire avant l'étape 0.4 (compose) et la phase 3
 
 ### 0.2 — Squelette de build et module `domain` (2026-09-15)
@@ -47,8 +47,26 @@ Les questions de contrôle et leurs réponses complètes sont dans `docs/CHEATSH
 - JUnit 6 plutôt que 5 (version courante, alignée sur Spring Boot 4 ; même API Jupiter)
 
 **Appris**
-- _à compléter après les questions de contrôle_
+- `api` vs `implementation` : un type exposé dans une signature publique → `api`
+- `--release` / toolchain protègent contre l'usage d'une API absente de Java 21 ;
+  `sourceCompatibility` non
+- BOM = versions recommandées ; `enforcedPlatform` impose (y compris à la baisse)
 
 **Points de blocage**
+- Aucune des 3 questions sue → réponses dans `docs/revision/2-approfondissement.md`
 - Linux Mint : le dépôt Docker attend le nom de code Ubuntu (`noble`), pas celui de
   Mint (`zena`)
+- Installation de Docker bloquée par le portail captif du Wi-Fi (pas un proxy) :
+  valider la page d'accueil du réseau, sinon reporter
+
+### Ajustement — préparation de l'entretien du 2026-09-18
+
+**Constat** : les questions de contrôle des étapes 0.1 et 0.2 portaient sur des détails
+d'outillage, pas sur ce qu'évalue un entretien craft.
+
+**Décisions**
+- Révision en deux niveaux dans `docs/revision/` : `1-fondamentaux.md` (principes,
+  vision, bonnes pratiques — rédigé en entier dès maintenant pour être lu d'ici
+  vendredi) et `2-approfondissement.md` (détails, pièges). Remplace `CHEATSHEET.md`
+- Questions de contrôle : 2 de niveau 1 + au plus 1 de niveau 2 optionnelle
+- Étapes 0.3 et 0.4 reportées après l'entretien ; phase 1 immédiatement

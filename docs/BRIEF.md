@@ -6,6 +6,10 @@ condensées sont dans `CLAUDE.md`.
 **Écarts décidés depuis :**
 - Spring Boot 4.1.x au lieu de 3.x (2026-09-15)
 - Modules Gradle créés au fil des phases plutôt que tous en phase 0 (2026-09-15)
+- `docs/CHEATSHEET.md` scindé en deux niveaux dans `docs/revision/` : fondamentaux
+  (prioritaire) et approfondissement (2026-09-15)
+- Étapes 0.3 (formatage) et 0.4 (compose, README) reportées après l'entretien du
+  2026-09-18 ; passage direct à la phase 1 (2026-09-15)
 
 ---
 

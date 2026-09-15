@@ -14,7 +14,9 @@ La qualité des explications compte autant que le code. Brief complet : docs/BRI
 - Faire écrire le développeur sur ce qui compte (invariants, tests, refactorings),
   puis relire et corriger franchement.
 - TDD en ping-pong : Claude formule le scénario, le dev écrit le test, puis le code.
-- Fin d'étape : 2-3 questions de contrôle type entretien ; reprendre si réponse à côté.
+- Fin d'étape : 2 questions de contrôle de niveau 1 (principes, à savoir en entretien)
+  + au plus 1 de niveau 2 marquée optionnelle. Reprendre si réponse à côté.
+  Si le dev ne sait pas : répondre et consigner dans docs/revision/.
 - Signaler l'excès : « en production on ferait X, ici Y pour comprendre Z ».
 - Direct, pas de validation de complaisance.
 - Aucune indirection « au cas où » : démontrer le besoin d'abord.
@@ -26,7 +28,9 @@ La qualité des explications compte autant que le code. Brief complet : docs/BRI
 - JOURNAL.md : fait / appris / points de blocage.
 - docs/adr/NNNN-titre.md : une décision non triviale = un ADR
   (contexte, décision, alternatives, conséquences).
-- docs/CHEATSHEET.md : mis à jour en fin de phase (concepts, pièges, Q/R d'entretien).
+- docs/revision/1-fondamentaux.md : principes, mécanique, vision, bonnes pratiques,
+  Q/R essentielles. Priorité absolue : c'est ce qui se relit avant un entretien.
+- docs/revision/2-approfondissement.md : détails, pièges, questions pointues.
 
 ## Architecture
 - Hexagonale. Modules Gradle, créés quand leur phase arrive :
