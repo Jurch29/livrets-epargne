@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 public final class Livret {
 
+    private BigDecimal solde = BigDecimal.ZERO;
+
     private Livret() {}
 
     public static Livret ouvrir() {
@@ -11,6 +13,10 @@ public final class Livret {
     }
 
     public BigDecimal solde() {
-        return BigDecimal.ZERO;
+        return solde;
+    }
+
+    public void deposer(BigDecimal montant) {
+        solde = solde.add(montant);
     }
 }
