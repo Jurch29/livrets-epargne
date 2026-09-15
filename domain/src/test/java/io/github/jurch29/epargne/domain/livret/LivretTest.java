@@ -1,6 +1,7 @@
 package io.github.jurch29.epargne.domain.livret;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.jurch29.epargne.domain.commun.Montant;
 import org.junit.jupiter.api.Test;
@@ -31,5 +32,14 @@ class LivretTest {
         livret.deposer(Montant.de("50.25"));
 
         assertThat(livret.solde()).isEqualTo(Montant.de("150.25"));
+    }
+
+    @Test
+    void refuse_un_versement_nul_et_laisse_le_solde_inchange() {
+        Livret livret = Livret.ouvrir();
+        livret.deposer(Montant.de("100"));
+
+        assertThatThrownBy(() -> livret.deposer(Montant.ZERO)).isInstanceOf(VersementInsuffisantException.class);
+        assertThat(livret.solde()).isEqualTo(Montant.de("100"));
     }
 }

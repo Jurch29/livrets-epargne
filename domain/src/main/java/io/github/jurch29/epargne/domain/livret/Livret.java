@@ -17,6 +17,9 @@ public final class Livret {
     }
 
     public void deposer(Montant montant) {
+        if (montant.estNul()) {
+            throw new VersementInsuffisantException(montant);
+        }
         solde = solde.ajouter(montant);
     }
 }
