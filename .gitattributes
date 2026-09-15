@@ -1,0 +1,7 @@
+* text=auto
+
+# gradlew doit rester en LF, sinon il ne s'exécute plus sur la CI Linux
+gradlew text eol=lf
+*.bat text eol=crlf
+
+*.jar binary
