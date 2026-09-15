@@ -40,7 +40,9 @@ La qualité des explications compte autant que le code. Brief complet : docs/BRI
 
 ## Conventions
 - Package racine : io.github.jurch29.epargne
-- Java 21, Spring Boot 4.1.x, Gradle Kotlin DSL, version catalog, convention plugins (build-logic/).
+- Java 21, Spring Boot 4.1.x, Gradle Kotlin DSL, version catalog (gradle/libs.versions.toml).
+- Convention plugins (build-logic/) seulement quand un 2e module duplique la config (phase 2).
+- Tests : JUnit 6 (API Jupiter), AssertJ.
 - Formatage : Spotless + palantir-java-format → ./gradlew spotlessApply avant commit.
 - Identifiants : métier en français, technique en anglais.
 - Tests : noms en français, snake_case (refuse_un_depot_qui_depasse_le_plafond), AssertJ.
