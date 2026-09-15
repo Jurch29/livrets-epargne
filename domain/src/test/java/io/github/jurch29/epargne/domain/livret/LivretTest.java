@@ -2,7 +2,7 @@ package io.github.jurch29.epargne.domain.livret;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
+import io.github.jurch29.epargne.domain.commun.Montant;
 import org.junit.jupiter.api.Test;
 
 class LivretTest {
@@ -11,25 +11,25 @@ class LivretTest {
     void un_livret_ouvert_a_un_solde_nul() {
         Livret livret = Livret.ouvrir();
 
-        assertThat(livret.solde()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(livret.solde()).isEqualTo(Montant.ZERO);
     }
 
     @Test
     void un_depot_augmente_le_solde_du_montant_depose() {
         Livret livret = Livret.ouvrir();
 
-        livret.deposer(BigDecimal.valueOf(100));
+        livret.deposer(Montant.de("100"));
 
-        assertThat(livret.solde()).isEqualByComparingTo(BigDecimal.valueOf(100));
+        assertThat(livret.solde()).isEqualTo(Montant.de("100"));
     }
 
     @Test
     void deux_depots_successifs_s_additionnent() {
         Livret livret = Livret.ouvrir();
 
-        livret.deposer(new BigDecimal("100"));
-        livret.deposer(new BigDecimal("50.25"));
+        livret.deposer(Montant.de("100"));
+        livret.deposer(Montant.de("50.25"));
 
-        assertThat(livret.solde()).isEqualByComparingTo(new BigDecimal("150.25"));
+        assertThat(livret.solde()).isEqualTo(Montant.de("150.25"));
     }
 }

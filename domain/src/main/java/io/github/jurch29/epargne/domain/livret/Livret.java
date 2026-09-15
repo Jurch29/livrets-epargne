@@ -1,10 +1,10 @@
 package io.github.jurch29.epargne.domain.livret;
 
-import java.math.BigDecimal;
+import io.github.jurch29.epargne.domain.commun.Montant;
 
 public final class Livret {
 
-    private BigDecimal solde = BigDecimal.ZERO;
+    private Montant solde = Montant.ZERO;
 
     private Livret() {}
 
@@ -12,11 +12,11 @@ public final class Livret {
         return new Livret();
     }
 
-    public BigDecimal solde() {
+    public Montant solde() {
         return solde;
     }
 
-    public void deposer(BigDecimal montant) {
-        solde = solde.add(montant);
+    public void deposer(Montant montant) {
+        solde = solde.ajouter(montant);
     }
 }
