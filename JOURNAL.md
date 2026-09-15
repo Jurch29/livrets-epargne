@@ -3,6 +3,18 @@
 Une entrée par étape : ce qui a été fait, ce que j'ai appris, où j'ai buté.
 Les questions de contrôle et leurs réponses complètes sont dans `docs/revision/`.
 
+## ▶ Prochaine étape (à mettre à jour à chaque fin d'étape)
+
+- **En attente** : réponses aux questions de contrôle de l'étape 1.1
+  1. Pourquoi `Montant` est-il un `record`, et pourquoi normaliser l'échelle dans son constructeur ?
+  2. Pourquoi vérifier que le solde est inchangé après un versement refusé ?
+- **Ensuite, phase 1 (mode accéléré jusqu'au 2026-09-18)** :
+  - 1.2 — Retrait : le solde ne devient jamais négatif
+  - 1.3 — Types de livret (Livret A, LDDS, Livret Jeune) et plafond de dépôt
+  - 1.4 — Titulaire et éligibilité (âge du Livret Jeune, `Clock` injectée)
+  - 1.5 — Unicité du Livret A par personne (invariant entre plusieurs agrégats)
+- **Reporté après l'entretien** : étapes 0.3 (formatage Spotless) et 0.4 (compose, README)
+
 ## Phase 0 — Fondations
 
 ### 0.1 — Initialisation du dépôt (2026-09-15)
