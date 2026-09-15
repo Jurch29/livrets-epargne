@@ -270,7 +270,10 @@ propre qu'on l'a trouvé.
   d'arrondi explicites, ou montant en centimes (`long`). Attention :
   `BigDecimal.equals` compare aussi l'échelle (`2.0` ≠ `2.00`) → `compareTo`.
 - **Exceptions métier** : non vérifiées (unchecked), nommées dans le langage métier
-  (`PlafondDepasseException`).
+  (`PlafondDepasseException`). Distinguer une **valeur invalide** (un montant négatif
+  n'existe pas → `IllegalArgumentException` dans le value object, futur HTTP 400) d'une
+  **règle métier refusée** (un versement nul est un montant valide, mais refusé par le
+  livret → exception métier, futur HTTP 422).
 - **`Optional`** : en type de retour pour « peut être absent » ; pas en paramètre, pas
   en champ.
 - **Contrat `equals`/`hashCode`** : deux objets égaux ont le même `hashCode`, sinon

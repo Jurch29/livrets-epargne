@@ -14,6 +14,9 @@ La qualité des explications compte autant que le code. Brief complet : docs/BRI
 - Faire écrire le développeur sur ce qui compte (invariants, tests, refactorings),
   puis relire et corriger franchement.
 - TDD en ping-pong : Claude formule le scénario, le dev écrit le test, puis le code.
+- **Mode accéléré jusqu'au 2026-09-18 (entretien)** : Claude écrit tests et code par
+  cycles TDD, vérifie rouge puis vert, commite à chaque cycle, puis résume en bref
+  (décisions + points d'entretien). Le dev relit. Retour au ping-pong ensuite.
 - Fin d'étape : 2 questions de contrôle de niveau 1 (principes, à savoir en entretien)
   + au plus 1 de niveau 2 marquée optionnelle. Reprendre si réponse à côté.
   Si le dev ne sait pas : répondre et consigner dans docs/revision/.

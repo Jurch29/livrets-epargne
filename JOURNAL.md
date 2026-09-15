@@ -70,3 +70,46 @@ d'outillage, pas sur ce qu'évalue un entretien craft.
   vendredi) et `2-approfondissement.md` (détails, pièges). Remplace `CHEATSHEET.md`
 - Questions de contrôle : 2 de niveau 1 + au plus 1 de niveau 2 optionnelle
 - Étapes 0.3 et 0.4 reportées après l'entretien ; phase 1 immédiatement
+
+## Phase 1 — Domaine pur
+
+### 1.1 — Premier cycle TDD : le dépôt (2026-09-15)
+
+**Fait** (un commit par cycle rouge → vert → refactor)
+- `Livret.ouvrir()` à solde nul
+- `deposer()` : un dépôt augmente le solde, deux dépôts s'additionnent
+- Refactor : extraction du value object `Montant` (package `commun`)
+- Refus d'un versement nul (`VersementInsuffisantException`), solde inchangé
+
+**Décisions**
+- Méthode de fabrique `ouvrir()` + constructeur privé : un seul point d'entrée, objet
+  valide dès sa création
+- `Montant` = record immuable : jamais négatif, au plus deux décimales, échelle
+  normalisée à 2 (sinon `100` ≠ `100.00` à cause de `BigDecimal.equals`), construit
+  depuis une `String` pour ne jamais passer par un `double`
+- Montant invalide → `IllegalArgumentException` (la valeur n'existe pas) ; versement
+  nul → exception métier (valeur valide, règle refusée)
+- `Montant` extrait *pendant le refactor*, quand la règle de validité est apparue —
+  pas en premier « au cas où »
+- Simplifications : ouverture sans versement initial, minimum de versement ramené à
+  « strictement positif » (réel : 10 € sur le Livret A), pas encore d'identifiant de
+  livret (arrivera avec le premier besoin : repository ou règle d'unicité)
+- Passage en mode accéléré (voir CLAUDE.md) à la demande du dev, faute de temps
+
+**Appris**
+- Entité vs value object : critère d'interchangeabilité. Deux montants de 50 € sont
+  interchangeables (value object) ; un livret se suit dans le temps (entité)
+- `livret.deposer()` plutôt que `setSolde()` : encapsulation des invariants ; le défaut
+  inverse s'appelle le **modèle anémique** (Fowler) ; principe *Tell, don't ask*
+- Syntaxe AssertJ : `assertThat(valeur).isEqualTo(attendu)` — une seule valeur, puis
+  chaînage (`assertThat(a, b)` est du Hamcrest)
+- *Fake it* : le code minimal peut retourner une constante ; le test suivant force la
+  généralisation (triangulation)
+- Un test vide passe au vert : toujours voir le test rouge d'abord
+
+**Points de blocage**
+- Premier jet de `Livret` : package par défaut (invisible depuis le test), `ouvrir()`
+  d'instance qui ne retournait rien, `Double` pour de l'argent, champs `protected`,
+  constructeur public laissant un solde `null`, `System.out` dans le domaine
+- Réponses aux questions de contrôle justes mais non justifiées → en entretien,
+  toujours donner le *pourquoi*
