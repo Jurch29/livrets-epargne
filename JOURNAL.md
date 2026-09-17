@@ -5,11 +5,13 @@ Les questions de contrôle et leurs réponses complètes sont dans `docs/revisio
 
 ## ▶ Prochaine étape (à mettre à jour à chaque fin d'étape)
 
-- **En attente** : réponses aux questions de contrôle de l'étape 1.1
-  1. Pourquoi `Montant` est-il un `record`, et pourquoi normaliser l'échelle dans son constructeur ?
-  2. Pourquoi vérifier que le solde est inchangé après un versement refusé ?
+- **En attente** : réponses aux questions de contrôle de l'étape 1.2
+  1. Pourquoi la règle « on ne retire pas plus que le solde » est-elle portée par
+     `Livret` et non par le refus des montants négatifs dans `Montant` ?
+  2. Pourquoi tester le retrait *égal* au solde ?
+  3. *(niveau 2, optionnelle)* En production, deux retraits concurrents de 80 € sur un
+     solde de 100 € : qu'est-ce qui empêche le solde de passer à −60, et à quel prix ?
 - **Ensuite, phase 1 (mode accéléré jusqu'au 2026-09-18)** :
-  - 1.2 — Retrait : le solde ne devient jamais négatif
   - 1.3 — Types de livret (Livret A, LDDS, Livret Jeune) et plafond de dépôt
   - 1.4 — Titulaire et éligibilité (âge du Livret Jeune, `Clock` injectée)
   - 1.5 — Unicité du Livret A par personne (invariant entre plusieurs agrégats)
@@ -125,3 +127,42 @@ d'outillage, pas sur ce qu'évalue un entretien craft.
   constructeur public laissant un solde `null`, `System.out` dans le domaine
 - Réponses aux questions de contrôle justes mais non justifiées → en entretien,
   toujours donner le *pourquoi*
+
+### 1.2 — Le retrait : le solde ne devient jamais négatif (2026-09-17)
+
+**Fait** (un commit par cycle)
+- `Montant.soustraire()` et `Livret.retirer()`
+- Refus d'un retrait supérieur au solde (`SoldeInsuffisantException`), solde inchangé ;
+  le retrait *égal* au solde reste autorisé et amène le solde à zéro
+- Refus d'un retrait nul
+- Refactor : garde unique `exigerMouvementPositif`, `VersementInsuffisantException`
+  renommée `MouvementNulException` (partagée par le dépôt et le retrait)
+
+**Décisions**
+- L'invariant « jamais de solde négatif » appartient au `Livret`, pas à `Montant` :
+  un montant négatif est une *valeur inexistante* (`IllegalArgumentException`, futur
+  400) ; retirer plus que le solde est une *règle métier refusée* (exception métier,
+  futur 422). Le refus des négatifs dans `Montant` reste un dernier filet, pas
+  l'expression de la règle
+- `Montant.soustraire()` a une précondition garantie par l'appelant, plutôt qu'un
+  retour `Optional<Montant>` : un seul appelant, l'indirection n'est pas démontrée
+- `estInferieurA` plutôt que `Comparable<Montant>` : lisible à l'appel, et rien
+  n'exige encore un tri de montants (YAGNI)
+- Exception renommée : « versement insuffisant » décrivait mal une règle qui n'est
+  qu'un refus du montant nul. Le nom reviendra en 1.3 avec le vrai minimum
+- Simplifications signalées : dans la réalité, un retrait sur Livret A doit laisser
+  10 € (sinon clôture), et le retrait peut être encadré sur un Livret Jeune mineur
+
+**Appris**
+- **Garantie forte face aux exceptions** : valider *avant* de muter, pour qu'une
+  opération refusée laisse l'objet exactement dans son état d'avant. Le rollback
+  transactionnel protège la base, pas l'objet en mémoire que l'appelant continue
+  d'utiliser s'il attrape l'exception
+- Tester la **limite** (retrait égal au solde) protège du glissement `<` / `<=` —
+  c'est exactement ce que cherche un test de mutation
+- `BigDecimal.equals` compare l'échelle, `compareTo` non : d'où la normalisation à la
+  construction de `Montant`, qui rend la représentation canonique
+
+**Points de blocage**
+- Questions de contrôle de l'étape 1.1 non répondues par le dev → réponses consignées
+  dans `docs/revision/1-fondamentaux.md` (§4 tests, §6 Java moderne)
