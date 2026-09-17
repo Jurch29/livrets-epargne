@@ -24,6 +24,9 @@ public final class Livret {
     }
 
     public void retirer(Montant montant) {
+        if (montant.estNul()) {
+            throw new MouvementNulException();
+        }
         if (solde.estInferieurA(montant)) {
             throw new SoldeInsuffisantException(solde, montant);
         }

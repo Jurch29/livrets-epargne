@@ -71,4 +71,13 @@ class LivretTest {
         assertThatThrownBy(() -> livret.retirer(Montant.de("100.01"))).isInstanceOf(SoldeInsuffisantException.class);
         assertThat(livret.solde()).isEqualTo(Montant.de("100"));
     }
+
+    @Test
+    void refuse_un_retrait_nul_et_laisse_le_solde_inchange() {
+        Livret livret = Livret.ouvrir();
+        livret.deposer(Montant.de("100"));
+
+        assertThatThrownBy(() -> livret.retirer(Montant.ZERO)).isInstanceOf(MouvementNulException.class);
+        assertThat(livret.solde()).isEqualTo(Montant.de("100"));
+    }
 }
