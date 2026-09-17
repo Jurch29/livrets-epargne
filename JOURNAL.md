@@ -5,15 +5,12 @@ Les questions de contrôle et leurs réponses complètes sont dans `docs/revisio
 
 ## ▶ Prochaine étape (à mettre à jour à chaque fin d'étape)
 
-- **En attente** : réponses aux questions de contrôle de l'étape 1.2
-  1. Pourquoi la règle « on ne retire pas plus que le solde » est-elle portée par
-     `Livret` et non par le refus des montants négatifs dans `Montant` ?
-  2. Pourquoi tester le retrait *égal* au solde ?
-  3. *(niveau 2, optionnelle)* En production, deux retraits concurrents de 80 € sur un
-     solde de 100 € : qu'est-ce qui empêche le solde de passer à −60, et à quel prix ?
-- **Ensuite, phase 1 (mode accéléré jusqu'au 2026-09-18)** :
-  - 1.3 — Types de livret (Livret A, LDDS, Livret Jeune) et plafond de dépôt
-  - 1.4 — Titulaire et éligibilité (âge du Livret Jeune, `Clock` injectée)
+- **En cours** : revue complète du projet avec le dev (fichiers, concepts, questions)
+  avant l'entretien du 2026-09-18
+- **Ensuite, phase 1** :
+  - 1.4 — Titulaire et éligibilité (âge du Livret Jeune, `Clock` injectée).
+    Arbitrage à rouvrir : si l'éligibilité fait diverger les types autrement que par
+    des valeurs, `TypeLivret` passe d'un enum à une `sealed interface` (ADR 0003)
   - 1.5 — Unicité du Livret A par personne (invariant entre plusieurs agrégats)
 - **Reporté après l'entretien** : étapes 0.3 (formatage Spotless) et 0.4 (compose, README)
 
@@ -190,3 +187,39 @@ bonnes pratiques, et Spring Boot compris de haut.
   rédigée donne l'illusion de savoir
 - Poids déplacé vers ce qui se joue au clavier (bloc « Coder devant quelqu'un »), le
   domaine livret n'étant plus qu'une illustration
+
+### 1.3 — Types de livret et plafond de dépôt (2026-09-17)
+
+**Fait**
+- `TypeLivret` (enum) : Livret A 22 950 €, LDDS 12 000 €, Livret Jeune 1 600 €
+- Type obligatoire à l'ouverture : `Livret.ouvrir(TypeLivret)`
+- Dépôt refusé au-delà du plafond (`PlafondDepasseException`), solde inchangé ;
+  dépôt amenant *exactement* au plafond autorisé
+- Tests paramétrés (`@ParameterizedTest` + `@CsvSource`) sur les trois types
+- ADR 0002 — enum plutôt que hiérarchie scellée
+
+**Décisions**
+- Enum plutôt que `sealed interface` : les types ne diffèrent aujourd'hui que par une
+  valeur. À rouvrir en 1.4 si l'éligibilité les fait diverger en données ou en
+  comportement (voir ADR 0002)
+- Pas de value object `Plafond` : un plafond *est* un montant, l'enveloppe n'ajoute
+  aucune règle
+- Le solde visé est calculé dans une variable locale avant validation — la mutation
+  reste le dernier geste
+- Simplifications signalées : le plafond réel porte sur les versements (les intérêts
+  capitalisés peuvent le dépasser) ; le minimum de versement de 10 € est une règle
+  d'ouverture, pas de dépôt, donc hors de cette étape
+
+**Appris**
+- Un test paramétré ne remplace pas un cycle TDD : celui-ci est passé **vert du premier
+  coup**, faute de « fake it » au cycle précédent. Il garde sa valeur (il fige les
+  montants réglementaires) mais ce n'est pas du TDD, et il faut savoir le dire
+- Vérifier qu'un test n'est pas creux : casser volontairement le code (plafond du
+  Livret A en dur) et constater le rouge — c'est du test de mutation à la main
+- Un enum se persiste par son **nom**, jamais par son `ordinal`
+- En production, un barème réglementaire est **daté** et chargé depuis un référentiel :
+  un taux ou un plafond a une période de validité, et l'historique doit rester
+  recalculable
+
+**Points de blocage**
+- Aucun. Étape courte et sans surprise
