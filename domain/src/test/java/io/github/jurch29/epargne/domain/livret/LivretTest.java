@@ -133,4 +133,47 @@ class LivretTest {
 
         assertThat(livret.solde()).isEqualTo(Montant.ZERO);
     }
+
+    @Test
+    void autorise_un_livret_jeune_le_jour_des_vingt_cinq_ans_du_titulaire() {
+        Titulaire vingtCinqAnsAujourdHui = neLe("2001-09-17");
+
+        Livret livret = Livret.ouvrir(TypeLivret.LIVRET_JEUNE, vingtCinqAnsAujourdHui, JOUR_D_OUVERTURE);
+
+        assertThat(livret.type()).isEqualTo(TypeLivret.LIVRET_JEUNE);
+    }
+
+    @Test
+    void refuse_un_livret_jeune_a_vingt_six_ans_revolus() {
+        Titulaire vingtSixAns = neLe("2000-09-17");
+
+        assertThatThrownBy(() -> Livret.ouvrir(TypeLivret.LIVRET_JEUNE, vingtSixAns, JOUR_D_OUVERTURE))
+                .isInstanceOf(AgeNonEligibleException.class);
+    }
+
+    @Test
+    void refuse_un_ldds_a_un_titulaire_mineur() {
+        Titulaire presqueDixHuitAns = neLe("2008-09-18");
+
+        assertThatThrownBy(() -> Livret.ouvrir(TypeLivret.LDDS, presqueDixHuitAns, JOUR_D_OUVERTURE))
+                .isInstanceOf(AgeNonEligibleException.class);
+    }
+
+    @Test
+    void autorise_un_ldds_le_jour_des_dix_huit_ans_du_titulaire() {
+        Titulaire dixHuitAnsAujourdHui = neLe("2008-09-17");
+
+        Livret livret = Livret.ouvrir(TypeLivret.LDDS, dixHuitAnsAujourdHui, JOUR_D_OUVERTURE);
+
+        assertThat(livret.type()).isEqualTo(TypeLivret.LDDS);
+    }
+
+    @Test
+    void autorise_un_livret_a_a_un_enfant_de_deux_ans() {
+        Titulaire enfant = neLe("2024-09-17");
+
+        Livret livret = Livret.ouvrir(TypeLivret.LIVRET_A, enfant, JOUR_D_OUVERTURE);
+
+        assertThat(livret.dateDOuverture()).isEqualTo(JOUR_D_OUVERTURE);
+    }
 }
