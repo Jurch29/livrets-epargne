@@ -2,6 +2,63 @@
 
 > Une page. Si tu ne lis qu'un fichier, c'est celui-là.
 
+## Les huit réponses à savoir dire
+
+> Formulées pour l'oral. Deux ou trois phrases, pas plus : on répond, on s'arrête, on
+> laisse l'autre relancer.
+
+**« Pourquoi pas `double` pour de l'argent ? »**
+Parce qu'un `double` est binaire : 0,1 n'est pas représentable exactement, donc
+`0.1 + 0.2` vaut `0.30000000000000004`. Sur des milliers d'opérations les erreurs
+s'accumulent, et un centime d'écart en comptabilité, c'est un incident. J'utilise
+`BigDecimal` avec échelle et arrondi explicites, ou des centimes en `long`. Piège :
+`BigDecimal.equals` compare aussi l'échelle, donc `compareTo` — ou je normalise
+l'échelle à la construction, comme dans mon objet `Montant`.
+
+**« `@Transactional`, ça fait quoi ? »**
+Ça délimite une transaction autour de la méthode : soit tout est écrit, soit rien.
+Spring l'obtient en enveloppant le bean dans un **proxy** qui ouvre la transaction avant
+l'appel, et commit ou rollback après. Rollback par défaut sur les exceptions **non
+vérifiées** seulement. Le piège classique : un appel interne (`this.autreMethode()`) ne
+passe pas par le proxy, donc l'annotation est ignorée.
+
+**« Vous testez comment ? »**
+Je teste le **comportement observable** : ce que la méthode retourne, l'état de l'objet
+après l'appel, l'exception levée. Pas l'implémentation — sinon le test casse au moindre
+refactoring. Un comportement par test, un nom qui décrit ce comportement. Je mocke ce
+qui est lent ou externe (base, API tierce), jamais les objets métier.
+
+**« Pourquoi un domaine sans Spring ni JPA ? »**
+Pour que les règles métier se testent sans démarrer le framework ni une base — dans mon
+projet, 28 tests en deux secondes. Et pour que le métier ne soit pas déformé par la
+technique : JPA réclame un constructeur vide et des setters, ce qui pousse au modèle
+anémique. Le framework se remplace, les règles métier restent.
+
+**« Une méthode de 200 lignes, vous la découpez comment ? »**
+En méthodes nommées par leur intention, une seule chose chacune. Mon critère concret :
+dès que j'ai besoin d'un commentaire pour expliquer un bloc, ce bloc est une méthode et
+le commentaire est son nom. Et je le fais sous couvert de tests — sans tests, je ne
+refactore pas, je réécris.
+
+**« C'est quoi du bon code ? »**
+Du code qu'un collègue comprend sans que je sois là pour l'expliquer, et qu'on peut
+changer sans peur parce qu'il est testé. Le reste vient après, et seulement si un besoin
+réel le demande.
+
+**« Un projet sans aucun test, par où commencez-vous ? »**
+Je le lance et je le fais tourner d'abord, pour comprendre le comportement réel. Ensuite
+j'écris des **tests de caractérisation** : ils figent le comportement actuel, même s'il
+est bizarre — leur but n'est pas de dire ce qui est juste, mais de m'alerter si je change
+quelque chose. Après seulement je refactore, par petits pas.
+
+**« Interface ou classe abstraite ? »**
+L'interface est un contrat : elle laisse l'appelant dépendre du *quoi* et pas du
+*comment*, donc je peux remplacer l'implémentation — par un double en test, par une
+autre techno en production. La classe abstraite sert à partager du code commun, et on
+n'hérite que d'une seule classe.
+
+---
+
 ## Les cinq réflexes du kata
 
 1. Reformuler le besoin, poser deux ou trois questions sur les cas limites.
