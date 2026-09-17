@@ -32,6 +32,11 @@ public record Montant(BigDecimal valeur) {
         return new Montant(valeur.add(autre.valeur));
     }
 
+    /** Précondition : {@code autre} n'excède pas ce montant — le résultat ne peut pas être négatif. */
+    public Montant soustraire(Montant autre) {
+        return new Montant(valeur.subtract(autre.valeur));
+    }
+
     public boolean estNul() {
         return valeur.signum() == 0;
     }

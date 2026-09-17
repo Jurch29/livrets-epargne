@@ -205,6 +205,16 @@ réseau ; l'équipe finit par ignorer le rouge, et la suite de tests ne protège
 - **Q.** Pourquoi pas H2 pour les tests ?
   **R.** Ce n'est pas le moteur de production : comportements et SQL différents
   (types, contraintes, fonctions). Testcontainers donne le vrai PostgreSQL.
+- **Q.** Pourquoi vérifier l'état de l'objet après une exception, et pas seulement
+  l'exception ?
+  **R.** Ce sont deux comportements distincts. Un code qui muterait *puis* lèverait
+  l'exception passerait un test qui n'assert que le type d'exception, tout en laissant
+  l'agrégat incohérent. On vise la **garantie forte face aux exceptions**
+  (atomicité : soit l'opération réussit, soit l'objet est exactement dans son état
+  d'avant), ce qui impose de valider **avant** de muter. Ne pas compter sur le rollback
+  transactionnel : il protège la base, pas l'objet en mémoire que l'appelant continue
+  d'utiliser s'il attrape l'exception. C'est aussi l'assertion que cherche un test de
+  mutation : sans elle, déplacer le `throw` ne casse aucun test.
 
 ---
 
@@ -286,6 +296,17 @@ propre qu'on l'a trouvé.
 - **Q.** Pourquoi un record pour un value object ?
   **R.** Immuable et égalité par valeur sans code à écrire ; la validation dans le
   constructeur compact garantit qu'aucune instance invalide n'existe.
+  Ce qu'il ne fait pas : il n'encapsule pas (les accesseurs sont publics) et si un
+  composant est mutable (`List`, `Date`), l'immuabilité n'est que de façade — il faut
+  copier dans le constructeur compact *et* à la lecture.
+- **Q.** Pourquoi normaliser l'échelle d'un `BigDecimal` dans un value object ?
+  **R.** `BigDecimal.equals` compare la valeur **et** l'échelle : `100` ≠ `100.00`.
+  Sans normalisation, deux montants qui représentent le même argent ne sont pas égaux,
+  et le value object devient inutilisable comme clé de `HashMap`. On rend la
+  représentation **canonique** à la construction plutôt que d'écrire un `equals`
+  manuel basé sur `compareTo` — qui ferait perdre l'intérêt du record. Règle générale :
+  normaliser à la construction (trim d'une chaîne, casse d'un e-mail, échelle d'un
+  montant), pour que « égal » soit vrai une fois pour toutes.
 - **Q.** Pourquoi pas `double` pour de l'argent ?
   **R.** Représentation binaire approximative : erreurs d'arrondi cumulées. `BigDecimal`
   est exact en décimal, avec un arrondi qu'on choisit explicitement.

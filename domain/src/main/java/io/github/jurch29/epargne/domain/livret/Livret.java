@@ -22,4 +22,8 @@ public final class Livret {
         }
         solde = solde.ajouter(montant);
     }
+
+    public void retirer(Montant montant) {
+        solde = solde.soustraire(montant);
+    }
 }

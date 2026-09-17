@@ -42,4 +42,14 @@ class LivretTest {
         assertThatThrownBy(() -> livret.deposer(Montant.ZERO)).isInstanceOf(VersementInsuffisantException.class);
         assertThat(livret.solde()).isEqualTo(Montant.de("100"));
     }
+
+    @Test
+    void un_retrait_diminue_le_solde_du_montant_retire() {
+        Livret livret = Livret.ouvrir();
+        livret.deposer(Montant.de("150.25"));
+
+        livret.retirer(Montant.de("50.25"));
+
+        assertThat(livret.solde()).isEqualTo(Montant.de("100"));
+    }
 }

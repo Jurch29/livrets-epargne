@@ -26,4 +26,9 @@ class MontantTest {
     void additionne_deux_montants() {
         assertThat(Montant.de("100").ajouter(Montant.de("50.25"))).isEqualTo(Montant.de("150.25"));
     }
+
+    @Test
+    void soustrait_deux_montants() {
+        assertThat(Montant.de("150.25").soustraire(Montant.de("50.25"))).isEqualTo(Montant.de("100"));
+    }
 }
