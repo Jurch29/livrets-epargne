@@ -46,7 +46,8 @@ La qualité des explications compte autant que le code. Brief complet : docs/BRI
 - Dépendances : infrastructure → application → domain. Jamais l'inverse.
 - Packages par concept métier (livret, titulaire…), pas par type technique.
 - Modèle de persistance JPA séparé du modèle de domaine ; mapping dans l'adapter.
-- Le temps est injecté (java.time.Clock), jamais LocalDate.now() dans le domaine.
+- Le temps entre dans le domaine par les paramètres (une date, un instant), jamais
+  LocalDate.now() ni une Clock. La Clock vit dans la couche application — ADR 0003.
 
 ## Conventions
 - Package racine : io.github.jurch29.epargne

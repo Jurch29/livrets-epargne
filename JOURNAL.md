@@ -5,13 +5,11 @@ Les questions de contrôle et leurs réponses complètes sont dans `docs/revisio
 
 ## ▶ Prochaine étape (à mettre à jour à chaque fin d'étape)
 
-- **En cours** : revue complète du projet avec le dev (fichiers, concepts, questions)
-  avant l'entretien du 2026-09-18
+- **En attente** : questions de contrôle de l'étape 1.4 (voir fin du journal)
 - **Ensuite, phase 1** :
-  - 1.4 — Titulaire et éligibilité (âge du Livret Jeune, `Clock` injectée).
-    Arbitrage à rouvrir : si l'éligibilité fait diverger les types autrement que par
-    des valeurs, `TypeLivret` passe d'un enum à une `sealed interface` (ADR 0003)
-  - 1.5 — Unicité du Livret A par personne (invariant entre plusieurs agrégats)
+  - 1.5 — Unicité du Livret A par personne. Premier invariant *entre* agrégats : il
+    faudra une identité de titulaire, et trancher entre service de domaine, contrainte
+    de base et cohérence à terme
 - **Reporté après l'entretien** : étapes 0.3 (formatage Spotless) et 0.4 (compose, README)
 
 ## Phase 0 — Fondations
@@ -223,3 +221,56 @@ bonnes pratiques, et Spring Boot compris de haut.
 
 **Points de blocage**
 - Aucun. Étape courte et sans surprise
+
+### 1.4 — Titulaire et éligibilité par l'âge (2026-09-17)
+
+**Fait**
+- `Titulaire` (record réduit à sa date de naissance) et `ageLe(LocalDate)`
+- `TrancheDAge` : intervalle d'âges éligibles, bornes incluses
+- `TypeLivret` porte sa tranche : Livret A tous âges, LDDS 18 ans et plus,
+  Livret Jeune 12 à 25 ans
+- `Livret.ouvrir(type, titulaire, dateDOuverture)` refuse un titulaire hors tranche
+  (`AgeNonEligibleException`) ; la date d'ouverture devient une donnée du livret
+- ADR 0003 — le temps entre par les paramètres ; `CLAUDE.md` ajusté
+- 28 tests
+
+**Décisions**
+- **Pas de `Clock` dans le domaine** : il reçoit une date. « Aujourd'hui » est une
+  donnée de l'appel, pas du modèle ; la `Clock` sera un bean de la couche application.
+  Bénéfice concret : une opération est datée une seule fois, au lieu d'appeler l'horloge
+  plusieurs fois et de risquer de tomber de part et d'autre de minuit
+- **L'enum tient** : l'ADR 0002 avait nommé la condition de bascule vers une `sealed
+  interface` (des types divergeant par leurs données ou leur comportement). Une tranche
+  d'âge est encore une *valeur* — pas de polymorphisme
+- Borne haute absente représentée par une sentinelle (`Integer.MAX_VALUE`) plutôt qu'un
+  `Integer` nullable : le record reste comparable par valeur, aucun appelant ne gère de
+  `null`
+- `Titulaire` réduit à sa date de naissance : aucune règle ne demande encore de nom ni
+  d'identifiant. L'identité arrivera en 1.5 et en fera une entité
+- *Object mother* dans le test (`ouvrir(type)`) : les tests qui ne parlent pas
+  d'éligibilité n'ont pas à choisir un titulaire
+
+**Appris**
+- Écrire un test sur le 29 février a **révélé un écart réel** : `Period.between` fait
+  vieillir au 1er mars, l'usage juridique français retient le 28 février les années non
+  bissextiles. Figé par un test et documenté, plutôt que découvert en production
+- Le fuseau est une décision de la couche application : une opération à 23 h 30 le
+  31 décembre ne tombe pas la même année en UTC et en `Europe/Paris`
+- Deux étapes de suite ont produit des tests **verts d'emblée**, faute de « fake it » :
+  ce sont des tests de spécification, utiles mais qui ne sont pas du TDD. À dire tel
+  quel plutôt qu'à maquiller
+- Vérifier un test par mutation manuelle (casser la borne haute, constater le rouge)
+  coûte trente secondes et dit la vérité sur sa valeur
+
+**Points de blocage**
+- Aucun
+
+**Questions de contrôle (niveau 1)**
+1. Pourquoi la date d'ouverture est-elle un paramètre plutôt qu'une `Clock` injectée
+   dans le `Livret` ? Donner l'argument métier, pas seulement « c'est plus testable ».
+2. La tranche d'âge diffère par type de livret : pourquoi n'est-ce pas un cas de
+   polymorphisme ? À quelle condition le deviendrait-il ?
+
+**Question de niveau 2 (optionnelle)**
+3. `TrancheDAge` utilise `Integer.MAX_VALUE` comme sentinelle. Quelles alternatives, et
+   qu'est-ce qui les rend moins bonnes *ici* ?
