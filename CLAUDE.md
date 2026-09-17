@@ -31,9 +31,12 @@ La qualité des explications compte autant que le code. Brief complet : docs/BRI
 - JOURNAL.md : fait / appris / points de blocage.
 - docs/adr/NNNN-titre.md : une décision non triviale = un ADR
   (contexte, décision, alternatives, conséquences).
-- docs/revision/1-fondamentaux.md : principes, mécanique, vision, bonnes pratiques,
-  Q/R essentielles. Priorité absolue : c'est ce qui se relit avant un entretien.
-- docs/revision/2-approfondissement.md : détails, pièges, questions pointues.
+- docs/revision/0-memo.md : une page, l'essentiel à réciter le matin d'un entretien.
+- docs/revision/1-fondamentaux.md : blocs courts (idée, pourquoi, piège) suivis de
+  questions **sans réponse**. Priorité absolue : c'est ce qui se relit avant un
+  entretien — donc rester bref, tout détail descend au niveau 2.
+- docs/revision/2-approfondissement.md : détails, pièges, questions pointues ; hors
+  périmètre d'une préparation d'entretien.
 
 ## Architecture
 - Hexagonale. Modules Gradle, créés quand leur phase arrive :

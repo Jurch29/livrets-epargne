@@ -166,3 +166,27 @@ d'outillage, pas sur ce qu'évalue un entretien craft.
 **Points de blocage**
 - Questions de contrôle de l'étape 1.1 non répondues par le dev → réponses consignées
   dans `docs/revision/1-fondamentaux.md` (§4 tests, §6 Java moderne)
+
+### Ajustement — dégraissage de la révision (2026-09-17)
+
+**Constat** (du dev) : `1-fondamentaux.md` avait grossi à 525 lignes, 14 sections toutes
+au même niveau de détail, avec des Q/R entièrement rédigées. Impossible à ingérer en un
+jour, et on le relit sans rien retenir.
+
+**Contexte précisé** : entretien d'1 h à 1 h 30, PC à apporter (donc du code en direct),
+Java généraliste, aucun domaine métier imposé. Objectif : quelques concepts solides, des
+bonnes pratiques, et Spring Boot compris de haut.
+
+**Décisions**
+- Trois fichiers par usage : `0-memo.md` (une page, le matin même), `1-fondamentaux.md`
+  (6 blocs courts, 208 lignes), `2-approfondissement.md` (tout le reste, qui vit pour
+  lui-même et pour d'autres projets)
+- Critère de tri : garder ce qu'on doit **justifier**, couper ce qui se **cherche**
+  (listes de codes HTTP, d'annotations, comparatifs Kafka/JMS)
+- Réduire le **nombre de sujets**, pas seulement leur longueur : 14 sections → 6 blocs.
+  Observabilité, sécurité, événementiel descendent : le projet ne les contient pas, en
+  parler longuement serait du bluff
+- Questions de fin de bloc **sans réponse** : se tester fait retenir, relire une réponse
+  rédigée donne l'illusion de savoir
+- Poids déplacé vers ce qui se joue au clavier (bloc « Coder devant quelqu'un »), le
+  domaine livret n'étant plus qu'une illustration
