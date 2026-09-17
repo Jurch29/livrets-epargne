@@ -1,15 +1,23 @@
 package io.github.jurch29.epargne.domain.livret;
 
 import io.github.jurch29.epargne.domain.commun.Montant;
+import java.util.Objects;
 
 public final class Livret {
 
+    private final TypeLivret type;
     private Montant solde = Montant.ZERO;
 
-    private Livret() {}
+    private Livret(TypeLivret type) {
+        this.type = type;
+    }
 
-    public static Livret ouvrir() {
-        return new Livret();
+    public static Livret ouvrir(TypeLivret type) {
+        return new Livret(Objects.requireNonNull(type, "type"));
+    }
+
+    public TypeLivret type() {
+        return type;
     }
 
     public Montant solde() {
@@ -18,7 +26,12 @@ public final class Livret {
 
     public void deposer(Montant montant) {
         exigerMouvementPositif(montant);
-        solde = solde.ajouter(montant);
+        // Le solde visé est calculé à part : tant qu'il n'est pas validé, le livret n'a pas bougé.
+        Montant soldeVise = solde.ajouter(montant);
+        if (type.plafond().estInferieurA(soldeVise)) {
+            throw new PlafondDepasseException(type, soldeVise);
+        }
+        solde = soldeVise;
     }
 
     public void retirer(Montant montant) {
