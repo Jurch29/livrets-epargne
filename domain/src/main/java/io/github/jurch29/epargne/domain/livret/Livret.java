@@ -17,19 +17,22 @@ public final class Livret {
     }
 
     public void deposer(Montant montant) {
-        if (montant.estNul()) {
-            throw new VersementInsuffisantException(montant);
-        }
+        exigerMouvementPositif(montant);
         solde = solde.ajouter(montant);
     }
 
     public void retirer(Montant montant) {
-        if (montant.estNul()) {
-            throw new MouvementNulException();
-        }
+        exigerMouvementPositif(montant);
         if (solde.estInferieurA(montant)) {
             throw new SoldeInsuffisantException(solde, montant);
         }
         solde = solde.soustraire(montant);
+    }
+
+    // Validation avant mutation : un mouvement refusé laisse le livret dans son état d'avant.
+    private static void exigerMouvementPositif(Montant montant) {
+        if (montant.estNul()) {
+            throw new MouvementNulException();
+        }
     }
 }

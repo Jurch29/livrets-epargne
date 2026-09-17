@@ -35,11 +35,11 @@ class LivretTest {
     }
 
     @Test
-    void refuse_un_versement_nul_et_laisse_le_solde_inchange() {
+    void refuse_un_depot_nul_et_laisse_le_solde_inchange() {
         Livret livret = Livret.ouvrir();
         livret.deposer(Montant.de("100"));
 
-        assertThatThrownBy(() -> livret.deposer(Montant.ZERO)).isInstanceOf(VersementInsuffisantException.class);
+        assertThatThrownBy(() -> livret.deposer(Montant.ZERO)).isInstanceOf(MouvementNulException.class);
         assertThat(livret.solde()).isEqualTo(Montant.de("100"));
     }
 
