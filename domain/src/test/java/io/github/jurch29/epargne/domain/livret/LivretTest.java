@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.jurch29.epargne.domain.commun.Montant;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class LivretTest {
 
@@ -81,21 +83,23 @@ class LivretTest {
         assertThat(livret.solde()).isEqualTo(Montant.de("100"));
     }
 
-    @Test
-    void un_depot_amenant_le_solde_au_plafond_est_autorise() {
-        Livret livret = Livret.ouvrir(TypeLivret.LIVRET_A);
+    @ParameterizedTest
+    @CsvSource({"LIVRET_A, 22950", "LDDS, 12000", "LIVRET_JEUNE, 1600"})
+    void un_depot_amenant_le_solde_au_plafond_est_autorise(TypeLivret type, String plafond) {
+        Livret livret = Livret.ouvrir(type);
 
-        livret.deposer(Montant.de("22950"));
+        livret.deposer(Montant.de(plafond));
 
-        assertThat(livret.solde()).isEqualTo(Montant.de("22950"));
+        assertThat(livret.solde()).isEqualTo(Montant.de(plafond));
     }
 
-    @Test
-    void refuse_un_depot_qui_depasse_le_plafond_et_laisse_le_solde_inchange() {
-        Livret livret = Livret.ouvrir(TypeLivret.LIVRET_A);
-        livret.deposer(Montant.de("22950"));
+    @ParameterizedTest
+    @CsvSource({"LIVRET_A, 22950", "LDDS, 12000", "LIVRET_JEUNE, 1600"})
+    void refuse_un_depot_qui_depasse_le_plafond_et_laisse_le_solde_inchange(TypeLivret type, String plafond) {
+        Livret livret = Livret.ouvrir(type);
+        livret.deposer(Montant.de(plafond));
 
         assertThatThrownBy(() -> livret.deposer(Montant.de("0.01"))).isInstanceOf(PlafondDepasseException.class);
-        assertThat(livret.solde()).isEqualTo(Montant.de("22950"));
+        assertThat(livret.solde()).isEqualTo(Montant.de(plafond));
     }
 }
