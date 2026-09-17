@@ -37,6 +37,10 @@ public record Montant(BigDecimal valeur) {
         return new Montant(valeur.subtract(autre.valeur));
     }
 
+    public boolean estInferieurA(Montant autre) {
+        return valeur.compareTo(autre.valeur) < 0;
+    }
+
     public boolean estNul() {
         return valeur.signum() == 0;
     }
