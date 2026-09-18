@@ -100,6 +100,11 @@ n'hérite que d'une seule classe.
 
 ## Les cinq réflexes du kata
 
+0. **Reformuler la question avant d'y répondre.** « Vous me demandez pourquoi il ne
+   s'applique pas, c'est ça ? » — deux secondes, et on ne répond jamais à côté. Sous
+   stress, le réflexe est de répondre à la question qu'on sait, pas à celle qui est posée.
+   Si la question est vague, c'est souvent volontaire : cadrer à voix haute (« il y a
+   deux angles, je prends celui-ci ? ») vaut mieux que deviner.
 1. Reformuler le besoin, poser deux ou trois questions sur les cas limites.
 2. Écrire la liste des cas, annoncer par lequel je commence — le plus simple.
 3. Un test à la fois : rouge, vert, refactor. **Voir le rouge.**
