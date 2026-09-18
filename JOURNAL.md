@@ -274,3 +274,33 @@ bonnes pratiques, et Spring Boot compris de haut.
 **Question de niveau 2 (optionnelle)**
 3. `TrancheDAge` utilise `Integer.MAX_VALUE` comme sentinelle. Quelles alternatives, et
    qu'est-ce qui les rend moins bonnes *ici* ?
+
+### Hors phasage — démo Spring Boot (2026-09-18, avant l'entretien)
+
+**Pourquoi** : besoin de visualiser un flux HTTP complet avant l'entretien, sans attendre
+la phase 3. Module `demo-spring` isolé, sans lien avec `domain`, supprimable d'un `rm`
+et d'une ligne retirée de `settings.gradle.kts`.
+
+**Fait**
+- Controller / Service / Repository, un rôle par fichier, package par concept (`message`)
+- `MessageRepository` en interface, `MessageEnMemoire` en implémentation : le service
+  dépend du contrat, pas de la technique
+- `@RestControllerAdvice` traduisant les exceptions métier en `ProblemDetail` (RFC 9457) :
+  404 et 400 sans un seul `try/catch` dans le controller
+- DTO d'entrée `CreationDeMessage` sans identifiant : le client ne peut pas l'imposer
+- Vérifié par appels réels : 201 + en-tête `Location`, liste, lecture, 404, 400
+
+**Appris (par l'erreur, les deux fois)**
+- `Port 8080 was already in use` : la configuration externalisée se surcharge à trois
+  niveaux — `application.properties`, variable d'environnement `SERVER_PORT`, argument
+  `--server.port`, du moins au plus prioritaire
+- `Name for argument not specified… ensure the compiler uses the '-parameters' flag` :
+  Java ne conserve pas le nom des paramètres dans le bytecode par défaut, donc Spring ne
+  peut pas relier `@PathVariable` à `nom`. Le plugin Gradle de Spring Boot ajoute ce flag
+  d'office ; le plugin `application` utilisé ici, non. Parade universelle : nommer
+  explicitement, `@PathVariable("nom")`
+- Un bean est un singleton partagé par tous les threads : d'où `ConcurrentHashMap` et
+  `AtomicLong` dans le repository en mémoire, jamais `HashMap` et `long`
+
+**À décider au retour** : garder ce module comme bac à sable, ou le supprimer et laisser
+la phase 3 construire l'infrastructure proprement dans l'architecture hexagonale.
