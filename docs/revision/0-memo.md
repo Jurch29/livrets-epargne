@@ -2,10 +2,41 @@
 
 > Une page. Si tu ne lis qu'un fichier, c'est celui-là.
 
-## Les huit réponses à savoir dire
+## Si tu ne retiens que ça — six phrases
+
+1. **`equals` et `hashCode` vont ensemble**, sinon l'objet disparaît de la `HashMap`.
+2. **`==` compare les références**, `equals` compare le contenu. Jamais `==` sur des `String`.
+3. **Jamais de `double` pour de l'argent** → `BigDecimal`, et `compareTo` plutôt que `equals`.
+4. **`@Transactional` marche par proxy** → un appel interne l'ignore, et le rollback n'est
+   automatique que sur les exceptions non vérifiées.
+5. **Injection par constructeur** ; un bean singleton ne porte pas d'état mutable.
+6. **On teste le comportement, pas l'implémentation.**
+
+---
+
+## Les réponses à savoir dire
 
 > Formulées pour l'oral. Deux ou trois phrases, pas plus : on répond, on s'arrête, on
 > laisse l'autre relancer.
+
+**« Pourquoi redéfinir `equals` et `hashCode` ensemble ? »**
+Parce qu'ils ont un contrat : deux objets égaux doivent avoir le même `hashCode`.
+L'inverse n'est pas exigé — deux objets différents peuvent partager un hash, c'est une
+collision, c'est normal.
+*Relance « qu'est-ce qui casse ? »* → Une `HashMap` choisit le bucket d'après le
+`hashCode`. Sans lui, deux objets égaux tombent dans deux buckets différents : je range
+un objet, je le cherche avec un objet égal, il est introuvable.
+*Relance « autre piège ? »* → Une clé **mutable** : si un champ change après l'insertion,
+le hash change et la clé n'est plus dans le bon bucket. D'où des clés immuables, et des
+`record` qui génèrent les deux méthodes correctement.
+
+**« `==` ou `equals` ? »**
+`==` compare les **références** — est-ce le même objet en mémoire. `equals` compare le
+**contenu**, si la classe l'a redéfini. Sur des objets, toujours `equals` ; `==` ne vaut
+que pour les primitifs et les enums.
+*Relance « et les `String` ? »* → Les littéraux sont mis en commun dans le *pool*, donc
+`"abc" == "abc"` est vrai, ce qui donne une fausse confiance. Dès qu'une chaîne vient
+d'une saisie, d'une base ou d'un calcul, c'est faux.
 
 **« Pourquoi pas `double` pour de l'argent ? »**
 Parce qu'un `double` est binaire : 0,1 n'est pas représentable exactement, donc
@@ -15,12 +46,20 @@ s'accumulent, et un centime d'écart en comptabilité, c'est un incident. J'util
 `BigDecimal.equals` compare aussi l'échelle, donc `compareTo` — ou je normalise
 l'échelle à la construction, comme dans mon objet `Montant`.
 
+*Relance « des pièges avec `BigDecimal` ? »* → `equals` compare aussi l'échelle
+(`2.0` != `2.00`) : `compareTo`, ou normaliser à la construction. Et `divide` sans mode
+d'arrondi lève une exception sur un décimal infini, typiquement une division par 3.
+
 **« `@Transactional`, ça fait quoi ? »**
 Ça délimite une transaction autour de la méthode : soit tout est écrit, soit rien.
 Spring l'obtient en enveloppant le bean dans un **proxy** qui ouvre la transaction avant
 l'appel, et commit ou rollback après. Rollback par défaut sur les exceptions **non
 vérifiées** seulement. Le piège classique : un appel interne (`this.autreMethode()`) ne
 passe pas par le proxy, donc l'annotation est ignorée.
+
+*Relance « mon `@Transactional` ne fait rien, pourquoi ? »* → Appel interne
+(`this.methode()`, le proxy est contourné — la cause la plus fréquente) ; méthode privée ;
+exception vérifiée (pas de rollback par défaut) ; objet créé avec `new`, donc pas un bean.
 
 **« Vous testez comment ? »**
 Je teste le **comportement observable** : ce que la méthode retourne, l'état de l'objet
