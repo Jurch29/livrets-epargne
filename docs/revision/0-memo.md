@@ -98,6 +98,30 @@ n'hérite que d'une seule classe.
 
 ---
 
+---
+
+## Les deux mécanismes à comprendre (pas à réciter)
+
+**Le *pool* de littéraux.** Une chaîne écrite en dur dans le code (`"abc"`) est rangée
+par Java dans une table interne, une seule fois — les `String` étant immuables, autant
+les partager. Donc deux littéraux identiques sont le **même objet** et `==` renvoie
+`true`. Une chaîne fabriquée à l'exécution (lue en base, saisie, `new String(...)`,
+concaténation calculée) est un **autre objet** : `==` renvoie `false`.
+→ D'où le piège : en test, les chaînes sont des littéraux et `==` semble marcher ; en
+production, elles viennent d'une base et le `if` ne se déclenche jamais. `==` sur des
+`String` marche **par accident**.
+
+**Pourquoi « binaire » veut dire « imprécis ».** En base 10, `1/3` s'écrit `0,3333…` :
+infini, donc non représentable exactement. Un ordinateur travaille en base 2, où il ne
+sait écrire que des sommes de 1/2, 1/4, 1/8… et où **`1/10` pose exactement le même
+problème**. Un `double` ayant une taille finie, il stocke la valeur la plus proche :
+`0.1` y vaut en réalité `0.1000000000000000055511…`. Deux approximations additionnées,
+et l'écart devient visible : `0.1 + 0.2` donne `0.30000000000000004`.
+→ Les nombres exacts en binaire sont ceux dont le dénominateur est une puissance de 2
+(`0.5`, `0.25`) — d'où des tests naïfs qui passent et un faux sentiment de sécurité.
+→ `BigDecimal` stocke des **chiffres décimaux** et la place de la virgule : exact sur de
+l'argent, au prix de la vitesse. Pour de l'argent, ce prix ne se discute pas.
+
 ## Les cinq réflexes du kata
 
 0. **Reformuler la question avant d'y répondre.** « Vous me demandez pourquoi il ne
