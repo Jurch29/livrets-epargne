@@ -10,3 +10,6 @@ dependencyResolutionManagement {
 }
 
 include("domain")
+
+// Démo jetable pour voir le flux Spring Boot de bout en bout. Hors phasage du projet.
+include("demo-spring")
